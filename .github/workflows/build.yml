@@ -30,7 +30,7 @@ jobs:
           python tests/test_path.py
 
       - name: Build
-        run: pyinstaller --onefile --windowed --clean --name QuickSentry --hidden-import pystray._win32 quicksentry_gui.py
+        run: pyinstaller --onefile --windowed --clean --name QuickSentry --icon assets/QuickSentry.ico --hidden-import pystray._win32 quicksentry_gui.py
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
