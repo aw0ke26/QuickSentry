@@ -9,7 +9,8 @@ __pycache__/
 .venv/
 venv/
 
-# ARP Watch data - contains names of networks you've joined, router MACs, logs
+# QuickSentry data - contains names of networks you've joined, router MACs, logs
+QuickSentry-data/
 ArpWatch-data/
 portable.txt
 *.log

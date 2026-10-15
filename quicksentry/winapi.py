@@ -260,7 +260,7 @@ def _icmp_api(ip, ttl, timeout_ms):
     if not h or h == ctypes.c_void_p(-1).value:
         raise OSError("IcmpCreateFile failed")
     try:
-        data = b"ARPWATCH" * 4
+        data = b"QSENTRY!" * 4
         opts = IP_OPTION_INFORMATION(Ttl=ttl)
         size = ctypes.sizeof(ICMP_ECHO_REPLY) + len(data) + 8 + 64
         buf = ctypes.create_string_buffer(size)

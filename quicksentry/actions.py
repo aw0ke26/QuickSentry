@@ -43,7 +43,7 @@ LEVEL_WORDS = {"ok": "OK", "info": "Info", "warn": "CAUTION", "alert": "ALERT",
 def build_report(snap, results, overall, alerts, path_targets=None, scan_rows=None):
     L = []
     t = time.strftime("%Y-%m-%d %H:%M:%S")
-    L += [f"ARP Watch {__version__} - Network report", f"Generated: {t}",
+    L += [f"QuickSentry {__version__} - Network report", f"Generated: {t}",
           f"Computer: {platform.node()}", "=" * 70, ""]
     if snap and snap.get("net_key"):
         a = snap.get("adapter") or {}
@@ -110,7 +110,7 @@ def save_report(text):
 # Diagnostics (verifies every collector on this machine)
 # --------------------------------------------------------------------------
 def diagnostics():
-    L = [f"ARP Watch {__version__} diagnostics - {time.strftime('%Y-%m-%d %H:%M:%S')}",
+    L = [f"QuickSentry {__version__} diagnostics - {time.strftime('%Y-%m-%d %H:%M:%S')}",
          f"OS: {platform.platform()}  Python: {platform.python_version()}",
          f"Admin: {winapi.is_admin()}  Portable: {storage.is_portable()}",
          f"Data folder: {storage.data_dir()}", ""]

@@ -1,6 +1,6 @@
 import copy, sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from arpwatch import engine as E, winapi
+from quicksentry import engine as E, winapi
 
 GW = "192.168.1.1"; GWMAC = "00:1a:1e:aa:bb:cc"; ATK = "a4:5e:60:11:22:33"  # Apple
 def base_snap(**kw):

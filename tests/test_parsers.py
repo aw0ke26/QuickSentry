@@ -3,7 +3,7 @@ import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from samples import IPCONFIG, WLAN_IF, WLAN_NETS, WLAN_LOCATION, ARP_A
-from arpwatch import sysinfo, winapi, oui
+from quicksentry import sysinfo, winapi, oui
 
 a = sysinfo.parse_ipconfig(IPCONFIG)["Wi-Fi"]
 assert a["gateways4"] == ["192.168.1.1"] and a["gateways6"] == ["fe80::1%12"]

@@ -34,7 +34,7 @@ def captive_portal(timeout=5):
     """'online', 'portal', or 'offline'."""
     try:
         c = http.client.HTTPConnection(PORTAL_HOST, 80, timeout=timeout)
-        c.request("GET", PORTAL_PATH, headers={"User-Agent": "ArpWatch"})
+        c.request("GET", PORTAL_PATH, headers={"User-Agent": "QuickSentry"})
         r = c.getresponse()
         body = r.read(512).decode("utf-8", "ignore")
         c.close()
@@ -91,7 +91,7 @@ def dns_check():
         if not answers <= good:
             out["wrong"].append((host, sorted(answers)))
     # A random name that cannot exist: a normal resolver says "no such domain".
-    probe = "aw-" + secrets.token_hex(8) + ".com"
+    probe = "qs-" + secrets.token_hex(8) + ".com"
     try:
         socket.getaddrinfo(probe, None, socket.AF_INET)
         out["nx_hijack"] = True

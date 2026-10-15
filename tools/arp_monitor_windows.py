@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-arp_watch_windows.py - Watch `arp -a` for MAC address changes and alert on Windows.
+arp_monitor_windows.py - Watch `arp -a` for MAC address changes and alert on Windows.
 
 Baseline = MAC seen for each IP on the first run. Later runs are compared
 against it. On a change you get a beep plus an always-on-top pop-up window.
 
 Usage:
-  python arp_watch_windows.py                 # watch default gateway (recommended)
-  python arp_watch_windows.py --ip 10.0.0.1   # watch a specific IP
-  python arp_watch_windows.py --all           # watch every dynamic IP in the ARP table
-  python arp_watch_windows.py --interval 2 --log arp_watch.log
+  python arp_monitor_windows.py                 # watch default gateway (recommended)
+  python arp_monitor_windows.py --ip 10.0.0.1   # watch a specific IP
+  python arp_monitor_windows.py --all           # watch every dynamic IP in the ARP table
+  python arp_monitor_windows.py --interval 2 --log arp_monitor.log
 
 No extra packages needed (standard library only). Admin rights not required.
 Run with pythonw.exe instead of python.exe to hide the console window.
@@ -109,7 +109,7 @@ def log(msg, logfile):
 
 def main():
     if sys.platform != "win32":
-        sys.exit("This version is for Windows. Use arp_watch.py on Linux.")
+        sys.exit("This version is for Windows. Use arp_monitor_linux.py on Linux.")
 
     p = argparse.ArgumentParser(description="Alert when a MAC in the ARP table changes.")
     g = p.add_mutually_exclusive_group()
@@ -166,9 +166,9 @@ def main():
                            f"Current MAC:  {mac}\n"
                            f"Time: {now()}")
                     if mac == baseline[ip]:
-                        title = "ARP Watch: MAC reverted to original"
+                        title = "QuickSentry Lite: MAC reverted to original"
                     else:
-                        title = "ARP Watch: MAC ADDRESS CHANGED"
+                        title = "QuickSentry Lite: MAC ADDRESS CHANGED"
                     log(f"{title} | {msg.replace(chr(10), ' | ')}", args.log)
                     alert(title, msg)
                     last_seen[ip] = mac

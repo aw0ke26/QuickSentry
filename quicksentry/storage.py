@@ -1,9 +1,9 @@
-"""Where ARP Watch keeps its files, plus settings / known-network persistence.
+"""Where QuickSentry keeps its files, plus settings / known-network persistence.
 
 Portable mode (data stored next to the exe) is used when:
   - the exe/script is on a removable drive (USB flash drive), or
-  - a file named 'portable.txt' or a folder 'ArpWatch-data' sits next to it.
-Otherwise data goes to %APPDATA%\\ArpWatch.
+  - a file named 'portable.txt' or a folder 'QuickSentry-data' sits next to it.
+Otherwise data goes to %APPDATA%\\QuickSentry.
 """
 
 import json
@@ -43,18 +43,35 @@ def is_portable():
     d = app_dir()
     return (winapi.drive_is_removable(d)
             or os.path.exists(os.path.join(d, "portable.txt"))
+            or os.path.isdir(os.path.join(d, "QuickSentry-data"))
             or os.path.isdir(os.path.join(d, "ArpWatch-data")))
 
 
 def data_dir():
     if is_portable():
-        d = os.path.join(app_dir(), "ArpWatch-data")
+        d = os.path.join(app_dir(), "QuickSentry-data")
+        old = os.path.join(app_dir(), "ArpWatch-data")
     else:
         base = os.environ.get("APPDATA") or os.path.expanduser("~")
-        d = os.path.join(base, "ArpWatch")
+        d = os.path.join(base, "QuickSentry")
+        old = os.path.join(base, "ArpWatch")
+    if not os.path.isdir(d) and os.path.isdir(old):
+        _migrate(old, d)       # carry over data from the ARP Watch name
     for sub in ("", "logs", "reports"):
         os.makedirs(os.path.join(d, sub), exist_ok=True)
     return d
+
+
+def _migrate(old, new):
+    import shutil
+    try:
+        os.makedirs(new, exist_ok=True)
+        for name in ("settings.json", "known_networks.json"):
+            src = os.path.join(old, name)
+            if os.path.exists(src):
+                shutil.copy2(src, os.path.join(new, name))
+    except OSError:
+        pass
 
 
 def _path(name):

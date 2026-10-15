@@ -1,6 +1,6 @@
 import sys, os, ipaddress
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from arpwatch import pathmon as P, scanner as S, winapi as W
+from quicksentry import pathmon as P, scanner as S, winapi as W
 P.rdns = lambda ip, timeout=1.5: ""
 path = ["10.1.1.1", "10.0.0.1", "10.2.2.1", "10.2.2.50"]
 state = {"path": path, "down": False}

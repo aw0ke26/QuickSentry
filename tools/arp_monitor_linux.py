@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-arp_watch.py - Watch `arp -a` for MAC address changes and alert on the desktop.
+arp_monitor_linux.py - Watch `arp -a` for MAC address changes and alert on the desktop.
 
 Baseline = MAC seen for each IP on the first run. Later runs are compared
 against it. On a change you get a desktop notification plus a pop-up window.
 
 Usage:
-  python3 arp_watch.py                 # watch default gateway (recommended)
-  python3 arp_watch.py --ip 10.0.0.1   # watch a specific IP
-  python3 arp_watch.py --all           # watch every IP in the ARP table
-  python3 arp_watch.py --interval 2 --log arp_watch.log
+  python3 arp_monitor_linux.py                 # watch default gateway (recommended)
+  python3 arp_monitor_linux.py --ip 10.0.0.1   # watch a specific IP
+  python3 arp_monitor_linux.py --all           # watch every IP in the ARP table
+  python3 arp_monitor_linux.py --interval 2 --log arp_monitor.log
 
 Requires: net-tools (arp)        -> sudo apt install net-tools
 Optional: zenity, libnotify-bin  -> sudo apt install zenity libnotify-bin
@@ -141,9 +141,9 @@ def main():
                            f"Current MAC:  {mac}\n"
                            f"Time: {now()}")
                     if mac == baseline[ip]:
-                        title = "ARP Watch: MAC reverted to original"
+                        title = "QuickSentry Lite: MAC reverted to original"
                     else:
-                        title = "ARP Watch: MAC ADDRESS CHANGED"
+                        title = "QuickSentry Lite: MAC ADDRESS CHANGED"
                     log(f"{title} | {msg.replace(chr(10), ' | ')}", args.log)
                     alert(title, msg)
                     last_seen[ip] = mac

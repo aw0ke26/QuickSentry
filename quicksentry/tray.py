@@ -33,10 +33,10 @@ class Tray:
         if not AVAILABLE:
             return
         menu = pystray.Menu(
-            pystray.MenuItem("Open ARP Watch", lambda *_: on_show(), default=True),
+            pystray.MenuItem("Open QuickSentry", lambda *_: on_show(), default=True),
             pystray.MenuItem("Start / stop monitoring", lambda *_: on_toggle()),
             pystray.MenuItem("Exit", lambda *_: on_exit()))
-        self.icon = pystray.Icon("ArpWatch", make_image(), "ARP Watch", menu)
+        self.icon = pystray.Icon("QuickSentry", make_image(), "QuickSentry", menu)
 
     @property
     def ok(self):

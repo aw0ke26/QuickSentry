@@ -1,4 +1,4 @@
-"""ARP Watch GUI (tkinter)."""
+"""QuickSentry GUI (tkinter)."""
 
 import csv
 import os
@@ -586,8 +586,8 @@ class App(tk.Tk):
                 ("check_web", "Internet checks (sign-in page, HTTPS interception, DNS)"),
                 ("popups", "Pop-up window on alerts"),
                 ("sound", "Sound on alerts"),
-                ("minimize_to_tray", "Closing the window keeps ARP Watch running in the tray"),
-                ("autostart_monitoring", "Start monitoring when ARP Watch opens")]
+                ("minimize_to_tray", "Closing the window keeps QuickSentry running in the tray"),
+                ("autostart_monitoring", "Start monitoring when QuickSentry opens")]
         for i, (k, text) in enumerate(opts, start=1):
             v = tk.BooleanVar(value=bool(self.settings.get(k, True)))
             ttk.Checkbutton(tab, text=text, variable=v, command=self._save_settings).grid(
@@ -631,7 +631,7 @@ class App(tk.Tk):
             self._monitor_cmd("recheck")
 
     def forget_networks(self):
-        if messagebox.askyesno(APP_NAME, "Forget every network ARP Watch has remembered?"):
+        if messagebox.askyesno(APP_NAME, "Forget every network QuickSentry has remembered?"):
             self.known.clear()
             storage.save_known_networks(self.known)
             self.reset_baseline()
@@ -719,7 +719,7 @@ class App(tk.Tk):
                 f"Pin router {gw} to {gm} ({oui.vendor(gm) or 'unknown maker'})?\n\n"
                 "This tells Windows to ignore anyone else claiming to be the router, which "
                 "blocks ARP spoofing. It needs administrator rights (Windows will ask), lasts "
-                "until you unpin or restart, and ARP Watch will offer to remove it when you "
+                "until you unpin or restart, and QuickSentry will offer to remove it when you "
                 "leave this network."):
             return
         if not actions.pin_gateway(ifi, gw, gm):
@@ -785,7 +785,7 @@ class App(tk.Tk):
             w.configure(bg=bg)
         self.b_title.configure(text=title, fg=fg)
         self.b_sub.configure(text=sub, fg=fg)
-        tip = f"ARP Watch - {title}"
+        tip = f"QuickSentry - {title}"
         if self.snap and self.snap.get("net_name"):
             tip += f" ({self.snap['net_name']})"
         self.tray.set_status(level, tip)

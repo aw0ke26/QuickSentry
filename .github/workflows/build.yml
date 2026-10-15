@@ -1,6 +1,6 @@
 name: Build EXE
 
-# Push a tag like v2.0.0 to build ArpWatch.exe and attach it to a GitHub Release.
+# Push a tag like v2.0.0 to build QuickSentry.exe and attach it to a GitHub Release.
 # You can also run it by hand from the Actions tab (Run workflow).
 on:
   push:
@@ -30,17 +30,17 @@ jobs:
           python tests/test_path.py
 
       - name: Build
-        run: pyinstaller --onefile --windowed --clean --name ArpWatch --hidden-import pystray._win32 arp_watch_gui.py
+        run: pyinstaller --onefile --windowed --clean --name QuickSentry --hidden-import pystray._win32 quicksentry_gui.py
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ArpWatch
-          path: dist/ArpWatch.exe
+          name: QuickSentry
+          path: dist/QuickSentry.exe
 
       - name: Publish release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/ArpWatch.exe
+          files: dist/QuickSentry.exe
           generate_release_notes: true

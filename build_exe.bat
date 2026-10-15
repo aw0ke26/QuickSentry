@@ -1,10 +1,10 @@
 @echo off
-REM Builds dist\ArpWatch.exe. Run this from the arp-watch folder.
+REM Builds dist\QuickSentry.exe. Run this from the project folder.
 python -m pip install --upgrade -r requirements.txt || goto :err
-python -m PyInstaller --onefile --windowed --clean --name ArpWatch --hidden-import pystray._win32 arp_watch_gui.py || goto :err
+python -m PyInstaller --onefile --windowed --clean --name QuickSentry --hidden-import pystray._win32 quicksentry_gui.py || goto :err
 echo.
-echo Done: dist\ArpWatch.exe
-echo To use from a flash drive, copy dist\ArpWatch.exe to the drive.
+echo Done: dist\QuickSentry.exe
+echo To use from a flash drive, copy dist\QuickSentry.exe to the drive.
 pause
 exit /b 0
 :err

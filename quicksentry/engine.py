@@ -502,7 +502,7 @@ class Engine:
         w = snap.get("wifi") or {}
         if not p:
             self._set("history", INFO,
-                      "First time on this network. ARP Watch will remember it for next time.")
+                      "First time on this network. QuickSentry will remember it for next time.")
             return
         visits = p.get("visits", 1)
         problems, warn = [], False
