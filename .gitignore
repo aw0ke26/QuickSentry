@@ -9,8 +9,11 @@ __pycache__/
 .venv/
 venv/
 
-# Logs (may contain IPs/MACs from your network)
+# ARP Watch data - contains names of networks you've joined, router MACs, logs
+ArpWatch-data/
+portable.txt
 *.log
+reports/
 
 # OS / editor
 Thumbs.db

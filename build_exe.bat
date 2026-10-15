@@ -1,9 +1,10 @@
 @echo off
-REM Builds ArpWatch.exe from arp_watch_gui.py. Run this from the folder containing the script.
-python -m pip install --upgrade pyinstaller || goto :err
-python -m PyInstaller --onefile --windowed --clean --name ArpWatch arp_watch_gui.py || goto :err
+REM Builds dist\ArpWatch.exe. Run this from the arp-watch folder.
+python -m pip install --upgrade -r requirements.txt || goto :err
+python -m PyInstaller --onefile --windowed --clean --name ArpWatch --hidden-import pystray._win32 arp_watch_gui.py || goto :err
 echo.
 echo Done: dist\ArpWatch.exe
+echo To use from a flash drive, copy dist\ArpWatch.exe to the drive.
 pause
 exit /b 0
 :err

@@ -1,6 +1,7 @@
 name: Build EXE
 
-# Push a tag like v1.0.0 to build ArpWatch.exe and attach it to a GitHub Release.
+# Push a tag like v2.0.0 to build ArpWatch.exe and attach it to a GitHub Release.
+# You can also run it by hand from the Actions tab (Run workflow).
 on:
   push:
     tags: ['v*']
@@ -19,11 +20,17 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install PyInstaller
-        run: pip install pyinstaller
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          python tests/test_parsers.py
+          python tests/test_engine.py
+          python tests/test_path.py
 
       - name: Build
-        run: pyinstaller --onefile --windowed --name ArpWatch arp_watch_gui.py
+        run: pyinstaller --onefile --windowed --clean --name ArpWatch --hidden-import pystray._win32 arp_watch_gui.py
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4

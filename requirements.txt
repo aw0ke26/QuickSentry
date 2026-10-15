@@ -1,0 +1,5 @@
+# Only needed for the system tray icon and for building the exe.
+# ARP Watch itself runs on the Python standard library.
+pystray>=0.19
+pillow>=10.0
+pyinstaller>=6.0
