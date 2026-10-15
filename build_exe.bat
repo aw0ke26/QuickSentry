@@ -1,7 +1,7 @@
 @echo off
 REM Builds dist\QuickSentry.exe. Run this from the project folder.
 python -m pip install --upgrade -r requirements.txt || goto :err
-python -m PyInstaller --onefile --windowed --clean --name QuickSentry --hidden-import pystray._win32 quicksentry_gui.py || goto :err
+python -m PyInstaller --onefile --windowed --clean --name QuickSentry --icon assets\QuickSentry.ico --hidden-import pystray._win32 quicksentry_gui.py || goto :err
 echo.
 echo Done: dist\QuickSentry.exe
 echo To use from a flash drive, copy dist\QuickSentry.exe to the drive.

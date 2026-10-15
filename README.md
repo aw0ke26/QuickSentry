@@ -112,7 +112,7 @@ build_exe.bat
 or manually:
 ```bat
 python -m pip install -r requirements.txt
-python -m PyInstaller --onefile --windowed --clean --name QuickSentry --hidden-import pystray._win32 quicksentry_gui.py
+python -m PyInstaller --onefile --windowed --clean --name QuickSentry --icon assets/QuickSentry.ico --hidden-import pystray._win32 quicksentry_gui.py
 ```
 Output: `dist\QuickSentry.exe`. Pushing a tag such as `v2.0.0` also builds it on GitHub (see `.github/workflows/build.yml`).
 
