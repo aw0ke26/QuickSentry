@@ -1,0 +1,1 @@
+"""QuickSentry Qt interface."""

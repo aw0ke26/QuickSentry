@@ -1,9 +1,10 @@
 """Where QuickSentry keeps its files, plus settings / known-network persistence.
 
-Portable mode (data stored next to the exe) is used when:
-  - the exe/script is on a removable drive (USB flash drive), or
-  - a file named 'portable.txt' or a folder 'QuickSentry-data' sits next to it.
-Otherwise data goes to %APPDATA%\\QuickSentry.
+Since v3 QuickSentry always runs as administrator, so everything lives in
+%ProgramData%\\QuickSentry, locked to SYSTEM + Administrators. A standard user
+(or malware running as one) can't edit the baseline or wipe the logs.
+Data from older versions (%APPDATA%\\QuickSentry, %APPDATA%\\ArpWatch, or a
+portable QuickSentry-data folder next to the exe) is copied over once.
 """
 
 import json
@@ -28,6 +29,16 @@ DEFAULT_SETTINGS = {
     "path_targets": "",
     "path_interval": 60,
     "scan_range": "",
+    # --- guard (v3) ---
+    "guard_speed_trap": True,      # freeze typing on robot-speed keystrokes
+    "guard_defender": True,        # run Microsoft Defender on new drives
+    "guard_autoplay": True,        # NoDriveTypeAutoRun = 0xFF
+    "guard_strict": False,         # mountvol /N (new volumes get no letter)
+    "guard_policies": {},          # category -> log|alert|ask|block (defaults in guard.hardware)
+    "guard_blocked": [],           # remembered blocked devices (VID:PID)
+    "guard_trusted": [],           # device instance IDs allowed permanently
+    "watch_connections": True,     # listeners / inbound sessions / firewall changes
+    "trusted_ips": [],             # inbound sources you've marked as expected
 }
 
 _lock = threading.Lock()
@@ -39,27 +50,38 @@ def app_dir():
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def is_portable():
-    d = app_dir()
-    return (winapi.drive_is_removable(d)
-            or os.path.exists(os.path.join(d, "portable.txt"))
-            or os.path.isdir(os.path.join(d, "QuickSentry-data"))
-            or os.path.isdir(os.path.join(d, "ArpWatch-data")))
+_ready = set()
 
 
 def data_dir():
-    if is_portable():
-        d = os.path.join(app_dir(), "QuickSentry-data")
-        old = os.path.join(app_dir(), "ArpWatch-data")
+    override = os.environ.get("QUICKSENTRY_DATA")          # tests / demo mode
+    if override:
+        d = override
     else:
-        base = os.environ.get("APPDATA") or os.path.expanduser("~")
+        base = os.environ.get("ProgramData") or os.path.expanduser("~")
         d = os.path.join(base, "QuickSentry")
-        old = os.path.join(base, "ArpWatch")
-    if not os.path.isdir(d) and os.path.isdir(old):
-        _migrate(old, d)       # carry over data from the ARP Watch name
+    if d in _ready:
+        return d
+    first = not os.path.isdir(d)
     for sub in ("", "logs", "reports"):
         os.makedirs(os.path.join(d, sub), exist_ok=True)
+    if first and not override:
+        _lock_down(d)
+        appdata = os.environ.get("APPDATA") or ""
+        for old in (os.path.join(appdata, "QuickSentry"), os.path.join(appdata, "ArpWatch"),
+                    os.path.join(app_dir(), "QuickSentry-data"), os.path.join(app_dir(), "ArpWatch-data")):
+            if appdata and os.path.isdir(old):
+                _migrate(old, d)
+                break
+    _ready.add(d)
     return d
+
+
+def _lock_down(d):
+    """SYSTEM + Administrators only (no-op off Windows or without admin)."""
+    if sys.platform == "win32" and winapi.is_admin():
+        winapi.run(["icacls", d, "/inheritance:r", "/grant:r",
+                    "*S-1-5-18:(OI)(CI)F", "*S-1-5-32-544:(OI)(CI)F"])
 
 
 def _migrate(old, new):
