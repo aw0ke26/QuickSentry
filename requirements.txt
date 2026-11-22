@@ -1,6 +1,9 @@
-# GUI + tray (QuickSentry v3 uses Qt via PySide6)
-PySide6>=6.6
+# GUI + tray: Qt Core/Gui/Widgets only (the full "PySide6" package also pulls ~175 MB of
+# WebEngine/PDF modules QuickSentry never uses)
+PySide6-Essentials>=6.6
 # build the exe
 pyinstaller>=6.0
-# optional: enables the drop-in YARA rules in rules/
-yara-python>=4.3
+#
+# Optional: YARA scanning of new drives with the rules in rules/. QuickSentry works without it.
+# Not installed by default because it has no prebuilt wheel for the newest Python versions and
+# would need Microsoft C++ Build Tools. To enable:  pip install -r requirements-optional.txt

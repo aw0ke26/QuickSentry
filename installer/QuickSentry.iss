@@ -67,7 +67,9 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Tasks: desktopico
 ; no 72-hour run limit). A normal Run-key entry can't start an admin app silently.
 Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\autostart.ps1"" -Install -Exe ""{app}\{#AppExe}"" -User ""{username}"""; Flags: runhidden; Tasks: autostart; StatusMsg: "Setting up sign-in autostart..."
 Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\autostart.ps1"" -Remove"; Flags: runhidden; Tasks: not autostart; StatusMsg: "Removing old autostart..."
-Filename: "{app}\{#AppExe}"; Description: "Launch QuickSentry now"; Flags: nowait postinstall skipifsilent
+; runascurrentuser: postinstall items normally run as the un-elevated user, and QuickSentry.exe
+; requires admin, which fails with "CreateProcess failed; code 740". The installer is already elevated.
+Filename: "{app}\{#AppExe}"; Description: "Launch QuickSentry now"; Flags: nowait postinstall skipifsilent runascurrentuser
 
 [UninstallRun]
 Filename: "{sys}\taskkill.exe"; Parameters: "/F /IM {#AppExe}"; Flags: runhidden; RunOnceId: "KillApp"

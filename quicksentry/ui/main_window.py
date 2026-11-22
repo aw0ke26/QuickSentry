@@ -538,23 +538,8 @@ class MainWindow(QWidget):
     # ------------------------------------------------------------ tray / window
     @staticmethod
     def app_icon():
-        pm = QPixmap(64, 64)
-        pm.fill(Qt.transparent)
-        p = QPainter(pm)
-        p.setRenderHint(QPainter.Antialiasing)
-        g = QRadialGradient(QPointF(32, 40), 34)
-        g.setColorAt(0, col("#1d4a12")); g.setColorAt(1, col("#020502"))
-        p.setBrush(g); p.setPen(QPen(col(STEEL_HI), 3))
-        p.drawEllipse(QRectF(4, 4, 56, 56))
-        p.setPen(QPen(col(LIME, 160), 1.5)); p.setBrush(Qt.NoBrush)
-        p.drawEllipse(QRectF(14, 14, 36, 36))
-        p.setBrush(col("#ffffff")); p.setPen(Qt.NoPen)
-        p.drawEllipse(QPointF(32, 32), 11, 11)
-        p.setBrush(col(VIOLET)); p.drawEllipse(QPointF(32, 32), 6, 6)
-        p.setBrush(col("#000000")); p.drawEllipse(QPointF(32, 32), 2.6, 2.6)
-        p.setBrush(col("#ffffff", 120)); p.drawEllipse(QRectF(14, 8, 30, 16))
-        p.end()
-        return QIcon(pm)
+        from .icon import app_icon
+        return app_icon()
 
     def _setup_tray(self):
         self.tray = None

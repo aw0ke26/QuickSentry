@@ -1,0 +1,1 @@
+"""Hardware guard + connection watch."""

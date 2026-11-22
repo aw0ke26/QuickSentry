@@ -139,7 +139,9 @@ Sweeps an IP range (`192.168.1.0/24`, `10.1.2.10-10.1.2.80`, `10.1.2.10-80`; max
 
 ## Building it yourself
 
-Requires Python 3.10+ on PATH. The installer also needs Inno Setup 6 (`winget install JRSoftware.InnoSetup`).
+Requires Python 3.10+ on PATH. The installer also needs Inno Setup 6, which `build_installer.bat` offers to install for you via winget.
+
+YARA scanning is optional: `pip install -r requirements-optional.txt` before building. It may need Microsoft C++ Build Tools on the newest Python versions. Without it, drives are still checked by the heuristics and Microsoft Defender.
 
 | Script | Output |
 |---|---|
