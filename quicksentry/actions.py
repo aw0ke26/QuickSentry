@@ -112,7 +112,7 @@ def save_report(text):
 def diagnostics():
     L = [f"QuickSentry {__version__} diagnostics - {time.strftime('%Y-%m-%d %H:%M:%S')}",
          f"OS: {platform.platform()}  Python: {platform.python_version()}",
-         f"Admin: {winapi.is_admin()}  Portable: {storage.is_portable()}",
+         f"Admin: {winapi.is_admin()}",
          f"Data folder: {storage.data_dir()}", ""]
 
     def section(name, fn):

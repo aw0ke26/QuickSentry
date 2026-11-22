@@ -1,5 +1,6 @@
-# Only needed for the system tray icon and for building the exe.
-# QuickSentry itself runs on the Python standard library.
-pystray>=0.19
-pillow>=10.0
+# GUI + tray (QuickSentry v3 uses Qt via PySide6)
+PySide6>=6.6
+# build the exe
 pyinstaller>=6.0
+# optional: enables the drop-in YARA rules in rules/
+yara-python>=4.3
