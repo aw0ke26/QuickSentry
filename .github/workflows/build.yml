@@ -1,10 +1,13 @@
-name: Build EXE
+name: Build
 
-# Push a tag like v2.0.0 to build QuickSentry.exe and attach it to a GitHub Release.
-# You can also run it by hand from the Actions tab (Run workflow).
+# - Every push / pull request: run the tests and build the exe + installer (downloadable from the run).
+# - Push a tag like v3.0.0: same, plus a GitHub Release with both files attached.
+# - Or run it by hand from the Actions tab (Run workflow).
 on:
   push:
+    branches: ['**']
     tags: ['v*']
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -30,18 +33,39 @@ jobs:
           python tests/test_path.py
           python tests/test_guard.py
 
-      - name: Build
-        run: pyinstaller --onefile --windowed --clean --uac-admin --name QuickSentry --icon assets/QuickSentry.ico --add-data "rules;rules" quicksentry_gui.py
+      - name: Read version
+        id: ver
+        shell: pwsh
+        run: |
+          $v = python -c "import quicksentry; print(quicksentry.__version__)"
+          "version=$v" >> $env:GITHUB_OUTPUT
+          if ($env:GITHUB_REF -like 'refs/tags/v*' -and $env:GITHUB_REF_NAME -ne "v$v") {
+            throw "Tag $env:GITHUB_REF_NAME doesn't match quicksentry/__init__.py version $v"
+          }
 
-      - name: Upload build artifact
+      - name: Build exe
+        run: pyinstaller --noconfirm --onefile --windowed --clean --uac-admin --name QuickSentry --icon assets/QuickSentry.ico --add-data "rules;rules" quicksentry_gui.py
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          choco install innosetup -y --no-progress
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /Q "/DAppVersion=${{ steps.ver.outputs.version }}" installer\QuickSentry.iss
+          if ($LASTEXITCODE -ne 0) { throw "ISCC failed" }
+
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: QuickSentry
-          path: dist/QuickSentry.exe
+          name: QuickSentry-${{ steps.ver.outputs.version }}
+          path: |
+            dist/QuickSentry.exe
+            dist/QuickSentry-Setup-${{ steps.ver.outputs.version }}.exe
 
       - name: Publish release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/QuickSentry.exe
+          files: |
+            dist/QuickSentry-Setup-${{ steps.ver.outputs.version }}.exe
+            dist/QuickSentry.exe
           generate_release_notes: true

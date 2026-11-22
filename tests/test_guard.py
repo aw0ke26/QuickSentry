@@ -76,5 +76,18 @@ try:
 except ValueError:
     pass
 
+# ---------------------------------------------------------------- uninstall cleanup
+try:
+    from quicksentry.guard.hardware import cleanup_system, quarantine_root
+    os.makedirs(os.path.join(quarantine_root(), "drive1"), exist_ok=True)
+    keep = os.path.join(quarantine_root(), "drive2")
+    os.makedirs(keep, exist_ok=True)
+    open(os.path.join(keep, "file-on-usb.txt"), "w").write("must survive")
+    cleanup_system()
+    check(not os.path.exists(os.path.join(quarantine_root(), "drive1")), "empty quarantine dir removed")
+    check(os.path.exists(os.path.join(keep, "file-on-usb.txt")), "cleanup never deletes files inside quarantine")
+except ImportError as e:   # PySide6 not installed
+    print("skip cleanup test:", e)
+
 print("ALL OK" if not FAILS else f"{len(FAILS)} FAILED")
 sys.exit(1 if FAILS else 0)

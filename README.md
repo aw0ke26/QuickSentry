@@ -26,8 +26,11 @@ It also includes a path monitor and a subnet scanner for investigating networks 
 
 ## Quick start
 
-1. Download `QuickSentry.exe` from the [Releases](../../releases) page.
-2. Run it and accept the UAC prompt. Monitoring starts automatically.
+1. Download **`QuickSentry-Setup-<version>.exe`** from the [Releases](../../releases) page and run it.
+   - It installs to `C:\Program Files\QuickSentry` and adds a Start menu entry.
+   - The **"Start QuickSentry when I sign in"** option (on by default) starts it in the tray at every sign-in without a UAC prompt. It uses a scheduled task with highest privileges.
+   - Uninstall from *Settings → Apps*. It releases any quarantined drives, turns automatic drive letters back on, and asks whether to keep your settings and logs.
+2. Prefer no install? Download plain **`QuickSentry.exe`** instead and run it. It asks for admin each time.
 3. Watch the **THREAT LEVEL** tube and the three status pods (Network / Hardware / Connections).
 
 | Threat level | Meaning | What to do |
@@ -35,6 +38,8 @@ It also includes a path monitor and a subnet scanner for investigating networks 
 | 🟢 **LOW** | Everything checks out. | Nothing. |
 | 🟡 **ELEVATED** | Something is unusual but not clearly an attack. | Read the yellow items. |
 | 🔴 **CRITICAL** | A strong sign of attack, a frozen keyboard, or a dangerous drive. | Stop sensitive activity and read the red items. |
+
+Only one copy runs at a time. Starting it again just tells you it's already in the tray.
 
 To preview the interface without admin rights or touching anything, run `QuickSentry.exe --demo` (this also works on Linux/macOS from source).
 
@@ -132,17 +137,25 @@ Sweeps an IP range (`192.168.1.0/24`, `10.1.2.10-10.1.2.80`, `10.1.2.10-80`; max
 
 ---
 
-## Building the exe yourself
+## Building it yourself
 
-Requires Python 3.10+ on PATH.
+Requires Python 3.10+ on PATH. The installer also needs Inno Setup 6 (`winget install JRSoftware.InnoSetup`).
 
-```bat
-build_exe.bat
-```
+| Script | Output |
+|---|---|
+| `build_exe.bat` | Runs the tests and builds `dist\QuickSentry.exe` (one file, asks for admin). |
+| `build_installer.bat` | Does the above, then builds `dist\QuickSentry-Setup-<version>.exe` from `installer\QuickSentry.iss`. |
 
-It runs the tests and builds `dist\QuickSentry.exe` (one file, asks for admin on launch). Pushing a tag such as `v3.0.0` also builds it on GitHub (see `.github/workflows/build.yml`).
+GitHub Actions (`.github/workflows/build.yml`) runs the tests and builds both files on every push. Pushing a tag such as `v3.0.0` also publishes a Release with both attached. The tag must match `__version__` in `quicksentry/__init__.py`.
 
-To run from source, use `python quicksentry_gui.py`, or add `--demo` for the UI preview.
+To run from source, use `python quicksentry_gui.py`. Useful flags:
+
+| Flag | What it does |
+|---|---|
+| `--demo` | UI preview, touches nothing, no admin needed |
+| `--tray` | Start hidden in the tray |
+| `--diagnostics` | Write a diagnostics report |
+| `--cleanup` | Release quarantined drives and undo Strict mode |
 
 ---
 
@@ -179,6 +192,9 @@ To run from source, use `python quicksentry_gui.py`, or add `--demo` for the UI 
 
 ```
 quicksentry_gui.py        Entry point
+build_exe.bat             Build dist\QuickSentry.exe
+build_installer.bat       Build dist\QuickSentry-Setup-<version>.exe
+installer/                Inno Setup script + sign-in autostart helper
 quicksentry/
   app.py                  Startup: admin check, --demo, --diagnostics
   engine.py               Network detection logic (all checks)

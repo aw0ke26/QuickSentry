@@ -74,6 +74,32 @@ def _quiet(args, timeout=30):
         return None
 
 
+def cleanup_system():
+    """Undo everything the guard may have left behind if QuickSentry was killed instead of closed.
+
+    Used by the uninstaller (QuickSentry.exe --cleanup). Removes quarantine mount points WITHOUT
+    touching the drives' contents (so they get a normal letter next time they're plugged in) and
+    turns automatic drive letters back on. Returns a list of what it did.
+    """
+    done = []
+    root = quarantine_root()
+    try:
+        names = os.listdir(root)
+    except OSError:
+        names = []
+    for name in names:
+        p = os.path.join(root, name)
+        if w.delete_mount_point(p):
+            done.append(f"unmounted quarantined volume at {p}")
+        try:
+            os.rmdir(p)               # only succeeds if empty; never recurses into a drive
+        except OSError:
+            pass
+    _quiet(["mountvol", "/E"])
+    done.append("automatic drive letters re-enabled (mountvol /E)")
+    return done
+
+
 @dataclass
 class Drive:
     vol_guid: str

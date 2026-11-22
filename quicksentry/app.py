@@ -3,11 +3,16 @@
     QuickSentry.exe                 normal run (requires administrator; the exe asks via UAC)
     QuickSentry.exe --demo          UI preview with fake data; touches nothing, no admin needed
     QuickSentry.exe --diagnostics   write a diagnostics report and exit
+    QuickSentry.exe --tray          start hidden in the system tray (used by the sign-in autostart)
+    QuickSentry.exe --cleanup       release quarantined drives + undo Strict mode, then exit (uninstaller)
 """
 import ctypes
 import os
 import subprocess
 import sys
+
+
+_MUTEX = None   # held for the life of the process
 
 
 def _relaunch_elevated():
@@ -37,6 +42,14 @@ def main():
             pass
         return 0
 
+    if "--cleanup" in sys.argv:
+        if sys.platform == "win32" and not winapi.is_admin():
+            return 1
+        from .guard.hardware import cleanup_system
+        for line in cleanup_system():
+            storage.log_line("[CLEANUP] " + line)
+        return 0
+
     if not demo and not winapi.is_admin():
         if _relaunch_elevated():
             return 0
@@ -45,6 +58,17 @@ def main():
                "protect its own logs.\n\nRight-click QuickSentry.exe > Run as administrator.\n"
                "(To just preview the interface, run it with --demo.)", "QuickSentry", 0x30)
         return 1
+
+    if not demo:
+        # one copy only: two keyboard hooks / device gates would fight each other
+        k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        k32.CreateMutexW.restype = ctypes.c_void_p
+        global _MUTEX
+        _MUTEX = k32.CreateMutexW(None, False, "Global\\QuickSentry.SingleInstance")
+        if ctypes.get_last_error() == 183:   # ERROR_ALREADY_EXISTS
+            ctypes.windll.user32.MessageBoxW(
+                0, "QuickSentry is already running. Look for its icon in the system tray.", "QuickSentry", 0x40)
+            return 0
 
     from PySide6.QtCore import Qt
     from PySide6.QtWidgets import QApplication
@@ -58,7 +82,10 @@ def main():
     app.setStyleSheet(QSS)
     app.setWindowIcon(MainWindow.app_icon())
     win = MainWindow(demo=demo)
-    win.show()
+    if "--tray" in sys.argv and win.tray:
+        win.winId()                     # create the native window so device events still arrive
+    else:
+        win.show()
     win.register_device_events()
     rc = app.exec()
     os._exit(rc)   # don't let a stuck helper thread keep the process alive
